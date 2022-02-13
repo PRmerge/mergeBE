@@ -1,20 +1,18 @@
 import { createConnection } from 'typeorm';
 
-export const connectMySQL = async (): Promise<void> => {
+export const connectMysql = async () => {
   await createConnection({
     type: 'mysql',
-    host: process.env.MYSQL_HOST,
     port: Number(process.env.MYSQL_PORT),
+    host: process.env.MYSQL_HOST,
     username: process.env.MYSQL_USERNAME,
     password: process.env.MYSQL_PASSWORD,
     database: process.env.MYSQL_NAME,
     entities: [
-      'dist/entity/*.js'
+      'dist/entities/*.js'
     ],
     synchronize: true,
-    logger: 'file',
-    logging: true
-  }).catch((err): void => {
-    console.error(err);
+    logging: true,
+    logger: 'file'
   });
 };

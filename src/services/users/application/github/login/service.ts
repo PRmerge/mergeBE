@@ -33,7 +33,7 @@ export class GithubLoginService {
   }
 
   // get user information
-  private static getUserInformation(accessToken) {
+  private getUserInformation(accessToken) {
     return axios({
       method: 'GET',
       url: 'https://api.github.com/user',

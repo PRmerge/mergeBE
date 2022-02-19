@@ -3,8 +3,8 @@ import { User } from '../domain/model';
 
 @EntityRepository(User)
 export class UserRepository extends AbstractRepository<User> {
-  // find By GihubId
-  public findByGihubId(githubIndex: number) {
+  // find By GithubId
+  public findByGithubId(githubIndex: number) {
     return this.repository.findOne({ githubIndex });
   }
 

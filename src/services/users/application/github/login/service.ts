@@ -64,7 +64,7 @@ export class GithubLoginService {
       const userInformation = await this.getUserInformation(splitAccessToken);
 
       const { login, avatar_url, id }: { login: string, avatar_url: string, id: number } = userInformation.data;
-      const isUser = await userRepository.findByGihubId(id);
+      const isUser = await userRepository.findByGithubId(id);
 
       if (!isUser) {
         await userRepository.saveUser(login, avatar_url, splitAccessToken, id);

@@ -1,6 +1,4 @@
-import { Router } from 'express';
 import get from './get';
+import { privateIntroRoutes } from './intro';
 
-export const privateUserRoutes = Router();
-
-privateUserRoutes.use(get);
+export const privateUserRoutes = [ get, ...privateIntroRoutes ]

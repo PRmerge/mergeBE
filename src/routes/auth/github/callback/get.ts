@@ -7,5 +7,3 @@ const githubLoginService = new GithubLoginService();
 router.get('/auth/github/callback', githubLoginService.getGithubCallback);
 
 export default router;
-
-

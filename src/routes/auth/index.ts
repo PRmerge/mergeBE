@@ -1,6 +1,4 @@
-import {publicGithubRoutes} from './github';
-import { Router } from 'express';
+import { publicGithubRoutes } from './github';
 
-export const publicAuthRoutes = Router();
+export const  publicAuthRoutes = [ ...publicGithubRoutes ];
 
-publicAuthRoutes.use(publicGithubRoutes);

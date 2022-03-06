@@ -1,11 +1,23 @@
-import { Router } from 'express';
+import { Request, Response, NextFunction, Router } from 'express';
 import { UserAuth } from '../../../middlewares/auth/user-auth';
-import { StackService } from '../../../services/stacks/application/service';
+import { UserService } from '../../../services/users/application/service';
 
 const router = Router();
 const userAUth = new UserAuth();
-const stackService = new StackService();
+const userService = new UserService();
 
-router.post('/users/stack', userAUth.loginUserAuth, stackService.createStack);
+router.post('/users/stacks', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { stacks } = req.body;
+    // Todo: 로그인 인증 생성시 구현
+    // const { githubIndex } = res.locals;
+    const response = await userService.updateStack(84619866, stacks);
+    res.json({
+      data: response.stack,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 export default router;

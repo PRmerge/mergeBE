@@ -1,15 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
-import { getCustomRepository } from 'typeorm';
 import { UserRepository } from '../../../infrastructure/repository';
+import { User } from '../../../domain/model';
 
 export class GithubLoginService {
+  private userRepository = UserRepository;
+
   // github auth
   private readonly github = {
     clientID: process.env.GITHUB_CLIENT_ID,
     clientSecret: process.env.GITHUB_CLIENT_SECRET,
-    redirectURI: process.env.GITHUB_REDIRECT
+    redirectURI: process.env.GITHUB_REDIRECT,
   };
 
   // authorize 후 redirect 되는 주소
@@ -18,7 +20,7 @@ export class GithubLoginService {
 
   // To et accessToken URI
   private accessTokenURI(code: string): string {
-    return `https://github.com/login/oauth/access_token?client_id=${this.github.clientID}&client_secret=${this.github.clientSecret}&code=${code}`;
+    return `https://github.com/login/oauth/access_token?client_id=${ this.github.clientID }&client_secret=${ this.github.clientSecret }&code=${ code }`;
   }
 
   // get Access Token
@@ -27,8 +29,8 @@ export class GithubLoginService {
       method: 'POST',
       url: this.accessTokenURI(code),
       headers: {
-        'content-type': 'application/json'
-      }
+        'content-type': 'application/json',
+      },
     });
   }
 
@@ -38,8 +40,8 @@ export class GithubLoginService {
       method: 'GET',
       url: 'https://api.github.com/user',
       headers: {
-        authorization: `token ${accessToken}`
-      }
+        authorization: `token ${ accessToken }`,
+      },
     });
   }
 
@@ -56,7 +58,6 @@ export class GithubLoginService {
   public getGithubCallback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { code } = req.query;
-      const userRepository = getCustomRepository(UserRepository);
 
       // get access token
       const accessToken = await this.getAccessToken(code);
@@ -64,17 +65,18 @@ export class GithubLoginService {
       const userInformation = await this.getUserInformation(splitAccessToken);
 
       const { login, avatar_url, id }: { login: string, avatar_url: string, id: number } = userInformation.data;
-      const isUser = await userRepository.findByGithubId(id);
+      const user = await this.userRepository().findByGithubId(id);
 
-      if (!isUser) {
-        await userRepository.saveUser(login, avatar_url, splitAccessToken, id);
+      if (!user) {
+        await this.userRepository().save(new User(login, avatar_url, splitAccessToken, id));
       } else {
-        await userRepository.updateUser(isUser, login, avatar_url, splitAccessToken);
+        user.userUpdate(avatar_url, splitAccessToken);
+        await this.userRepository().save(user);
       }
 
       const [ jwtLoginToken, jwtGithubToken ]: string[] = await Promise.all([
         jwt.sign({ login, avatar_url, id }, process.env.JTW_SECRET_KEY),
-        jwt.sign({ splitAccessToken }, process.env.JTW_SECRET_KEY)
+        jwt.sign({ splitAccessToken }, process.env.JTW_SECRET_KEY),
       ]);
 
       // Todo: localStorage 로 변경필요
@@ -82,7 +84,7 @@ export class GithubLoginService {
       res.cookie('GithubToken', jwtGithubToken);
       res.status(200).json({
         loginToken: jwtLoginToken,
-        githubToken: jwtGithubToken
+        githubToken: jwtGithubToken,
       });
 
     } catch (err) {

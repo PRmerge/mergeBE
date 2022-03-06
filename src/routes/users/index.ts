@@ -1,5 +1,5 @@
-import get from './get';
 import { privateIntroRoutes } from './intro';
 import { privateStackRoutes } from './stack';
+import { privateUserIdRoutes} from './_userId';
 
-export const privateUserRoutes = [ get, ...privateIntroRoutes, ...privateStackRoutes ];
+export const privateUserRoutes = [ ...privateIntroRoutes, ...privateStackRoutes, ...privateUserIdRoutes ];

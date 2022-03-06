@@ -1,20 +1,23 @@
-import { NextFunction, Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
 import { UserRepository } from '../infrastructure/repository';
 
 export class UserService {
-  // create intro
-  public saveUserIntro = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { intro } = req.body;
-      console.log(intro);
-      const userService = getCustomRepository(UserRepository);
-      const githubIndex: number = res.locals.githubIndex;
-      await userService.updateUserIntro(githubIndex, intro);
+  private userRepository = UserRepository;
+  // get 10 users
+  getTenUser() {
+    return this.userRepository().findRandom();
+  }
 
-      res.status(200).json({});
-    } catch (err) {
-      next(err);
-    }
+  // create intro
+  async saveUserIntro(intro: string, githubIndex: number) {
+    const user = await this.userRepository().findByGithubId(githubIndex);
+    user.introUpdate(intro);
+    return this.userRepository().save(user);
   };
+
+  // Add user's stack
+  async updateStack(githubIndex: number, stacks: string[]) {
+    const user = await this.userRepository().findByGithubId(githubIndex);
+    user.updateStack(stacks);
+    return this.userRepository().save(user);
+  }
 }

@@ -80,8 +80,8 @@ export class GithubLoginService {
       ]);
 
       // Todo: localStorage 로 변경필요
-      res.cookie('loginToken', jwtLoginToken);
-      res.cookie('GithubToken', jwtGithubToken);
+      // res.cookie('loginToken', jwtLoginToken);
+      // res.cookie('GithubToken', jwtGithubToken);
       res.status(200).json({
         loginToken: jwtLoginToken,
         githubToken: jwtGithubToken,

@@ -14,7 +14,7 @@ export class UserService {
     return this.userRepository().save(user);
   };
 
-  // Add user's stack
+  // Add user's stacks
   async updateStack(githubIndex: number, stacks: string[]) {
     const user = await this.userRepository().findByGithubId(githubIndex);
     user.updateStack(stacks);

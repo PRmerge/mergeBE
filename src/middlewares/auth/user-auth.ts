@@ -6,22 +6,19 @@ export class UserAuth {
   // loginUser auth
   public loginUserAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // @ts-ignore
-      // const { loginToken, githubToken } = req.headers.authorization;
+      // FIXME: authorization 에 대한 토큰 받아오는 로직 수정 필요. 프론트 배포 시
+      const { logintoken, githubtoken }: { logintoken: string, githubtoken: string} = req.headers as any;
 
-      const splitLoginToken = req.headers.authorization.split(' ')[1];
+      const splitLoginToken = logintoken.split(' ')[1];
+      const splitGithubToken = githubtoken.split(' ')[1]
+      const [ decodeLoginToken, decodeGithubToken ] = await Promise.all([
+        jwt.decode(splitLoginToken) as JwtPayload,
+        jwt.decode(splitGithubToken) as JwtPayload
+      ]);
 
-      // console.log(req.headers);
-      // const [ decodeLoginToken, decodeGithubToken ] = await Promise.all([
-      //   jwt.decode(loginToken) as JwtPayload,
-      //   jwt.decode(githubToken) as JwtPayload
-      // ]);
-
-      const decodeLoginToken = await jwt.decode(splitLoginToken) as JwtPayload;
-      // Todo: 우선 이렇게 작업
-      res.locals.userName = decodeLoginToken.login;
-      res.locals.id = decodeLoginToken.id;
-      res.locals.githubToken = "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";
+      res.locals.user = decodeLoginToken.login;
+      res.locals.githubIndex = decodeLoginToken.id;
+      res.locals.githubToken = decodeGithubToken.splitAccessToken;
       next();
     } catch (err) {
       next(err);

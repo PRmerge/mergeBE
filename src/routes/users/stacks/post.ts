@@ -9,9 +9,9 @@ const userService = new UserService();
 router.post('/users/stacks', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { stacks } = req.body;
-    // Todo: 로그인 인증 생성시 구현
-    // const { githubIndex } = res.locals;
-    const response = await userService.updateStack(84619866, stacks);
+    const { githubIndex } = res.locals;
+
+    const response = await userService.updateStack(githubIndex, stacks);
     res.json({
       data: response.stack,
     });

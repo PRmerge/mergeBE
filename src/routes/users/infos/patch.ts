@@ -7,10 +7,8 @@ const router = Router();
 const userAuth = new UserAuth();
 const userService = new UserService();
 
-
-// Todo:
 router.patch('/users/infos', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
-  const user: string = res.locals.userName;
+  const user: string = res.locals.user;
 
   const temp = await axios({
     method: 'GET',
@@ -24,20 +22,28 @@ router.patch('/users/infos', userAuth.loginUserAuth, async (req: Request, res: R
     repos.push(reposLanguage.languages_url);
   }
 
-
-  for (let i = 0; i < repos.length; i++) {
-    let language = await axios({
+  const languageList = await Promise.all([...repos.map(async (repo) => {
+    const getLanguage = await axios({
       method: 'GET',
-      url: repos[i],
+      url: repo,
       headers: {
         authorization: `token ${res.locals.githubToken}`
       }
     })
-    console.log(language.data);
+    return getLanguage.data;
+  })])
+
+  const mostLanguageList = {};
+  for (let i=0; i<languageList.length; i++) {
+    Object.keys(languageList[i]).map((language => {
+      if (language in mostLanguageList) {
+        mostLanguageList[language] += languageList[i][language];
+      } else {
+        mostLanguageList[language] = languageList[i][language];
+      }
+    }))
   }
-
-  res.json();
-
+  res.status(200).json({ data: {...mostLanguageList}});
 })
 
 export default router;

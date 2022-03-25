@@ -4,13 +4,14 @@ import { GithubApi } from '../../../services/users/application/github/service';
 
 // Todo: login Auth
 const router = Router();
-// const userAuth = new UserAuth();
+const userAuth = new UserAuth();
 const github = new GithubApi();
 
-router.get('/users/:userName', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/users/:userName', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { userName } = req.params;
-    const user = await github.getUserProfile(userName, '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');
+    const { githubToken } = res.locals;
+    const user = await github.getUserProfile(userName, githubToken);
 
     const { login, avatar_url, url, repos_url } = user.data;
     res.json({

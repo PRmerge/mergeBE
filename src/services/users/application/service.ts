@@ -3,6 +3,7 @@ import axios from 'axios';
 
 export class UserService {
   private userRepository = UserRepository;
+
   // get 10 users
   getTenUser() {
     return this.userRepository().findRandom();
@@ -26,34 +27,36 @@ export class UserService {
   async updateGithubInfos(user: string, githubToken: string) {
     const getRepoList = await axios({
       method: 'GET',
-      url: `https://api.github.com/users/${user}/repos`,
+      url: `https://api.github.com/users/${ user }/repos`,
       headers: {
-        authorization: `token ${githubToken}`
-      }
+        authorization: `token ${ githubToken }`,
+      },
     });
 
+    // FIXME: repo가 없는 경우에 대한 if문 작성 필요
     const repoList: string[] = getRepoList.data.map((repo) => repo.languages_url);
-    const languageList = await Promise.all([...repoList.map(async (repo) => {
+
+    const languageList = await Promise.all(repoList.map(async (repo) => {
       const getLanguage = await axios({
         method: 'GET',
         url: repo,
         headers: {
-          authorization: `token ${githubToken}`
-        }
+          authorization: `token ${ githubToken }`,
+        },
       });
       return getLanguage.data;
-    })]);
-
+    }));
+    console.log(languageList);
     const mostLanguageList = {};
-    for (let i=0; i<languageList.length; i++) {
+    for (let i = 0; i < languageList.length; i++) {
       Object.keys(languageList[i]).map((language) => {
         if (language in mostLanguageList) {
           mostLanguageList[language] += languageList[i][language];
         } else {
           mostLanguageList[language] = languageList[i][language];
         }
-      })
+      });
     }
-    return mostLanguageList
+    return mostLanguageList;
   }
 }

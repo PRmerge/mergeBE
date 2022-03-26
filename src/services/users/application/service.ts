@@ -35,6 +35,7 @@ export class UserService {
 
     // FIXME: repo가 없는 경우에 대한 if문 작성 필요
     const repoList: string[] = getRepoList.data.map((repo) => repo.languages_url);
+    const countRepos = repoList.length;
 
     const languageList = await Promise.all(repoList.map(async (repo) => {
       const getLanguage = await axios({
@@ -46,7 +47,7 @@ export class UserService {
       });
       return getLanguage.data;
     }));
-    console.log(languageList);
+
     const mostLanguageList = {};
     for (let i = 0; i < languageList.length; i++) {
       Object.keys(languageList[i]).map((language) => {
@@ -57,6 +58,8 @@ export class UserService {
         }
       });
     }
-    return mostLanguageList;
+
+    // Todo: repos 와 commits 수 가져와야하는데 commits 관련 상의 필요 DB 저장 필요
+    return { countRepos, mostLanguageList };
   }
 }

@@ -9,9 +9,9 @@ const userService = new UserService();
 router.patch('/users/infos', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
   const { user, githubToken } = res.locals;
 
-  const mostLanguageList = await userService.updateGithubInfos(user, githubToken);
+  const userInfos = await userService.updateGithubInfos(user, githubToken);
 
-  res.status(200).json({ data: {...mostLanguageList}});
+  res.status(200).json({ data: {...userInfos}});
 })
 
 export default router;

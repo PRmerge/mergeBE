@@ -63,7 +63,7 @@ export class GithubLoginService {
       const accessToken = await this.getAccessToken(code);
       const splitAccessToken: string = accessToken.data.split('&')[0].split('=')[1];
       const userInformation = await this.getUserInformation(splitAccessToken);
-
+      console.log(userInformation.data);
       const { login, avatar_url, id }: { login: string, avatar_url: string, id: number } = userInformation.data;
       const user = await this.userRepository().findByGithubId(id);
 

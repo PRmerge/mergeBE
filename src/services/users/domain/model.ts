@@ -12,7 +12,7 @@ export class User {
   imgUrl: string;
 
   @Column({ nullable: true })
-  target: string;
+  infos: string;
 
   @Column()
   intro: string;
@@ -26,22 +26,24 @@ export class User {
   @OneToMany(() => Stack, stack => stack.user, { cascade: true })
   stack: Stack[];
 
-  userUpdate(imgUrl: string, githubAccessToken: string) {
-    this.imgUrl = imgUrl;
-    this.githubAccessToken = githubAccessToken;
+  static create(userName: string, imgUrl: string, githubAccessToken: string, githubIndex: number) {
+    return new User(userName, imgUrl, githubAccessToken, githubIndex);
   }
 
-  introUpdate(intro: string) {
-    this.intro = intro;
+  update(imgUrl?: string, githubAccessToken?: string, intro?: string, stacks?: string[]) {
+    if (imgUrl && githubAccessToken) {
+      this.imgUrl = imgUrl;
+      this.githubAccessToken = githubAccessToken;
+    } else if (intro) {
+      this.intro = intro;
+    } else {
+      this.stack = stacks.map((stack) => {
+        return Stack.create(stack);
+      });
+    }
   }
 
-  updateStack(stacks: string[]) {
-    this.stack = stacks.map((stack) => {
-      return new Stack(stack);
-    });
-  }
-
-  constructor(userName: string, imgUrl: string, githubAccessToken: string, githubIndex: number) {
+  private constructor(userName: string, imgUrl: string, githubAccessToken: string, githubIndex: number) {
     this.userName = userName;
     this.intro = `안녕하세요. ${ userName }입니다.`;
     this.imgUrl = imgUrl;
@@ -61,7 +63,11 @@ export class Stack {
   @ManyToOne(() => User, user => user.stack, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   user: never;
 
-  constructor(stack: string) {
+  static create(stack: string) {
+    return new Stack(stack);
+  }
+
+  private constructor(stack: string) {
     this.stack = stack;
   }
 }

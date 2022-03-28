@@ -1,43 +1,21 @@
 import { Request, Response, NextFunction, Router } from 'express';
 import { UserAuth } from '../../../middlewares/auth/user-auth';
 import { UserService } from '../../../services/users/application/service';
-import axios from 'axios';
 
 const router = Router();
 const userAuth = new UserAuth();
 const userService = new UserService();
 
-
-// Todo:
 router.patch('/users/infos', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
-  const user: string = res.locals.userName;
+  const { user, githubToken, githubIndex } = res.locals;
 
-  const temp = await axios({
-    method: 'GET',
-      url: `https://api.github.com/users/${user}/repos`,
-    headers: {
-      authorization: `token ${res.locals.githubToken}`
-    }
-  })
-  const repos = [];
-  for (let reposLanguage of temp.data) {
-    repos.push(reposLanguage.languages_url);
+  try {
+    const userInfos = await userService.updateGithubInfos(user, githubIndex, githubToken);
+
+    res.status(200).json({ data: { ...userInfos } });
+  } catch (err) {
+    next(err);
   }
-
-
-  for (let i = 0; i < repos.length; i++) {
-    let language = await axios({
-      method: 'GET',
-      url: repos[i],
-      headers: {
-        authorization: `token ${res.locals.githubToken}`
-      }
-    })
-    console.log(language.data);
-  }
-
-  res.json();
-
-})
+});
 
 export default router;

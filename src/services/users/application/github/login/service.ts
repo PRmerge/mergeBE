@@ -1,4 +1,3 @@
-import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
 import axios from 'axios';
 import { UserRepository } from '../../../infrastructure/repository';
@@ -15,7 +14,7 @@ export class GithubLoginService {
   };
 
   // authorize 후 redirect 되는 주소
-  private redirectAuthURI: string = 'https://github.com/login/oauth/authorize?client_id=' + this.github.clientID
+  redirectAuthURI: string = 'https://github.com/login/oauth/authorize?client_id=' + this.github.clientID
     + '&redirect_uri=' + this.github.redirectURI;
 
   // To et accessToken URI
@@ -45,50 +44,30 @@ export class GithubLoginService {
     });
   }
 
-  // get auth
-  public getGithubAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      res.redirect(this.redirectAuthURI);
-    } catch (err) {
-      next(err);
-    }
-  };
-
   // github callback URI and get accessToken
-  public getGithubCallback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const { code } = req.query;
+  async getGithubCallback(code: string) {
 
-      // get access token
-      const accessToken = await this.getAccessToken(code);
-      const splitAccessToken: string = accessToken.data.split('&')[0].split('=')[1];
-      const userInformation = await this.getUserInformation(splitAccessToken);
+    // get access token
+    const accessToken = await this.getAccessToken(code);
+    const splitAccessToken: string = accessToken.data.split('&')[0].split('=')[1];
+    const userInformation = await this.getUserInformation(splitAccessToken);
+    const { login, avatar_url, id }: { login: string, avatar_url: string, id: number } = userInformation.data;
+    const user = await this.userRepository().findByGithubId(id);
 
-      const { login, avatar_url, id }: { login: string, avatar_url: string, id: number } = userInformation.data;
-      const user = await this.userRepository().findByGithubId(id);
-
-      if (!user) {
-        await this.userRepository().save(new User(login, avatar_url, splitAccessToken, id));
-      } else {
-        user.userUpdate(avatar_url, splitAccessToken);
-        await this.userRepository().save(user);
-      }
-
-      const [ jwtLoginToken, jwtGithubToken ]: string[] = await Promise.all([
-        jwt.sign({ login, avatar_url, id }, process.env.JTW_SECRET_KEY),
-        jwt.sign({ splitAccessToken }, process.env.JTW_SECRET_KEY),
-      ]);
-
-      // Todo: localStorage 로 변경필요
-      // res.cookie('loginToken', jwtLoginToken);
-      // res.cookie('GithubToken', jwtGithubToken);
-      res.status(200).json({
-        loginToken: jwtLoginToken,
-        githubToken: jwtGithubToken,
-      });
-
-    } catch (err) {
-      next(err);
+    if (!user) {
+      await this.userRepository().save(User.create(login, avatar_url, splitAccessToken, id));
+    } else {
+      user.update(avatar_url, splitAccessToken);
+      await this.userRepository().save(user);
     }
+
+    const [ jwtLoginToken, jwtGithubToken ]: string[] = await Promise.all([
+      jwt.sign({ login, avatar_url, id }, process.env.JTW_SECRET_KEY),
+      jwt.sign({ splitAccessToken }, process.env.JTW_SECRET_KEY),
+    ]);
+
+    // Todo: localStorage 로 변경필요
+    return [ jwtLoginToken, jwtGithubToken ];
+
   };
 }

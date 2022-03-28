@@ -16,7 +16,7 @@ class UserCustomRepository extends AbstractRepository<User> {
 
   // find By GithubId
   findByGithubId(githubIndex: number) {
-    return this.repository.findOneOrFail({ relations: [ 'stack' ], where: { githubIndex } });
+    return this.repository.findOne({ relations: [ 'stack' ], where: { githubIndex } });
   }
 }
 

@@ -8,9 +8,10 @@ const userAuth = new UserAuth();
 const github = new GithubApi();
 
 router.get('/users/:userName', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
+  const { userName } = req.params;
+  const { githubToken } = res.locals;
+
   try {
-    const { userName } = req.params;
-    const { githubToken } = res.locals;
     const user = await github.getUserProfile(userName, githubToken);
 
     const { login, avatar_url, url, repos_url } = user.data;

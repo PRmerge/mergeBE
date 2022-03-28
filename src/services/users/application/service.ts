@@ -68,7 +68,7 @@ export class UserService {
 
     // Todo: commits 관련 해결 필요
     user.infos = JSON.stringify({ countRepos, mostLanguageList });
-    console.log(JSON.parse(user.infos));
+
     return this.userRepository().save(user);
   }
 }

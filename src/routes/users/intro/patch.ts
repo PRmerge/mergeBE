@@ -8,14 +8,13 @@ const userService = new UserService();
 
 // Todo: 사용자 인증 구현시 수정
 router.patch('/users/intro', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
+  const { intro }: { intro: string } = req.body;
+  const { githubIndex } = res.locals;
+
   try {
-    const { intro }: { intro: string } = req.body;
-    const { githubIndex } = res.locals;
     const response = await userService.saveUserIntro(intro, githubIndex);
 
-    res.json({
-      data: response.intro
-    })
+    res.json({ data: response.intro })
   } catch (err) {
     next(err);
   }

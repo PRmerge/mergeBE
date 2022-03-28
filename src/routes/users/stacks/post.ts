@@ -7,14 +7,13 @@ const userAuth = new UserAuth();
 const userService = new UserService();
 
 router.post('/users/stacks', userAuth.loginUserAuth, async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const { stacks } = req.body;
-    const { githubIndex } = res.locals;
+  const { stacks } = req.body;
+  const { githubIndex } = res.locals;
 
+  try {
     const response = await userService.updateStack(githubIndex, stacks);
-    res.json({
-      data: response.stack,
-    });
+
+    res.json({ data: response.stack });
   } catch (err) {
     next(err);
   }

@@ -8,9 +8,7 @@ router.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const response = await userService.getTenUser();
 
-    res.json({
-      data: response,
-    });
+    res.json({ data: response});
   } catch (err) {
     next(err);
   }

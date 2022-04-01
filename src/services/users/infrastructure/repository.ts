@@ -1,38 +1,25 @@
-import { EntityRepository, AbstractRepository } from 'typeorm';
+import { EntityRepository, AbstractRepository, getCustomRepository } from 'typeorm';
 import { User } from '../domain/model';
 
 @EntityRepository(User)
-export class UserRepository extends AbstractRepository<User> {
-  // find By GithubId
-  public findByGithubId(githubIndex: number) {
-    return this.repository.findOne({ githubIndex });
+class UserCustomRepository extends AbstractRepository<User> {
+  // getMain
+  // Todo: Need to Random
+  findRandom() {
+    return this.repository.find({ take: 10 });
   }
 
   // create user
-  public saveUser(userName: string, imgUrl: string, githubAccessToken: string, githubIndex: number) {
-    const user = new User();
-    user.userName = userName;
-    user.intro = `안녕하세요. ${userName}입니다.`;
-    user.imgUrl = imgUrl;
-    user.githubAccessToken = githubAccessToken;
-    user.githubIndex = githubIndex;
+  save(user: User) {
     return this.manager.save(user);
   }
 
-  // update user
-  public updateUser(user: User, userName: string, imgUrl: string, githubAccessToken: string) {
-    user.userName = userName;
-    user.imgUrl = imgUrl;
-    user.githubAccessToken = githubAccessToken;
-    return this.manager.save(user);
+  // find By GithubId
+  findByGithubId(githubIndex: number) {
+    return this.repository.findOne({ relations: [ 'stack' ], where: { githubIndex } });
   }
+}
 
-  // update user intro
-  public async updateUserIntro(githubIndex: number, intro: string) {
-    const user = await this.repository.findOne({ githubIndex });
-    console.log(githubIndex);
-    console.log(user);
-    user.intro = intro;
-    return this.manager.save(user);
-  }
+export function UserRepository() {
+  return getCustomRepository(UserCustomRepository);
 }

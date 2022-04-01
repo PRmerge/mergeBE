@@ -6,12 +6,12 @@ export const connectMysql = async () => {
     port: Number(process.env.MYSQL_PORT),
     host: process.env.MYSQL_HOST,
     username: process.env.MYSQL_USERNAME,
-    database: process.env.MYSQL_NAME,
+    database: process.env.MYSQL_DATABASE,
     entities: [
-      'dist/entities/*.js'
+      'dist/entities/*.js',
     ],
     synchronize: true,
     logging: true,
-    logger: 'file'
+    logger: 'file',
   });
 };

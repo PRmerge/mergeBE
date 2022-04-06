@@ -5,7 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import * as cors from 'cors';
 import helmet from 'helmet';
 import 'dotenv/config';
-import { connectMysql, connectMongo } from './db';
+import { connectMysql } from './db';
 import { globalRoutes } from './routes';
 import { errorHandler, routerError } from './middlewares/error-handler';
 
@@ -34,9 +34,9 @@ class App {
     connectMysql().then(() => {
       console.log('MySQL 연결 성공');
     });
-    connectMongo().then(() => {
-      console.log('MongoDB 연결 성공');
-    });
+    // connectMongo().then(() => {
+    //   console.log('MongoDB 연결 성공');
+    // });
   }
 
   constructor() {

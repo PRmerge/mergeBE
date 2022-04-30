@@ -24,7 +24,7 @@ export class UserService {
   }
 
   // Get github'infos (most language, commit ...)
-  async updateGithubInfos(userId: string, githubIndex: number, githubToken: string) {
+  async updateGithubInfos(userId: string, githubIndex: number, githubToken: string, repoList: string[]) {
 
     const user = await this.userRepository().findByGithubId(githubIndex);
 
@@ -32,18 +32,7 @@ export class UserService {
       throw new Error('not such user not found.');
     }
 
-    const getRepoList = await axios({
-      method: 'GET',
-      url: `https://api.github.com/users/${ userId }/repos`,
-      headers: {
-        authorization: `token ${ githubToken }`,
-      },
-    });
-
-    // FIXME: repo가 없는 경우에 대한 if문 작성 필요
-    const repoList: string[] = getRepoList.data.map((repo) => repo.languages_url);
     const countRepos = repoList.length;
-
     const languageList = await Promise.all(repoList.map(async (repo) => {
       const getLanguage = await axios({
         method: 'GET',

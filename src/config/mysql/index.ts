@@ -7,9 +7,7 @@ export const connectMysql = async () => {
     host: process.env.MYSQL_HOST,
     username: process.env.MYSQL_USERNAME,
     database: process.env.MYSQL_DATABASE,
-    entities: [
-      'dist/entities/*.js',
-    ],
+    entities: ['dist/entities/*.js'],
     synchronize: true,
     logging: true,
     logger: 'file',

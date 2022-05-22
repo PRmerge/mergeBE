@@ -1,15 +1,21 @@
 {
   "compilerOptions": {
+    "lib": ["ES2021"],
+    "target": "es2021",
+
     "module": "commonjs",
-    "target": "ES2021",
-    "outDir": "./dist",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
-  },
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "resolveJsonModule": true,
+    "removeComments": true,
+    "noErrorTruncation": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "baseUrl": "src"
+  }
 }

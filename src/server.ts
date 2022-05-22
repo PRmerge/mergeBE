@@ -1,8 +1,8 @@
 import App from './app';
 
 const http = new App().app;
-const port: string = process.env.PORT;
+const port = process.env.PORT;
 
-http.listen(port, (): void => {
+http.listen(port, () => {
   console.log(`http://localhost:${port}`);
 });

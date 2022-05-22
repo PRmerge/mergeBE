@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import * as compression from 'compression';
 import { connectMysql } from './config/mysql';
+import { globalRouter } from './routes';
 import 'dotenv/config';
 
 class App {
@@ -20,8 +21,13 @@ class App {
     this.app.use(compression());
   }
 
+  private routerHandler() {
+    this.app.use('/', globalRouter);
+  }
+
   constructor() {
     this.init();
+    this.routerHandler();
     connectMysql().then(() => {
       console.log('connect Mysql!');
     });

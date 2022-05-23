@@ -25,6 +25,9 @@ export class User {
   @Column()
   token!: string;
 
+  @Column()
+  mostLanguage?: string;
+
   @OneToMany(() => Stack, (stack) => stack.user, { cascade: true })
   stack?: Stack[];
 

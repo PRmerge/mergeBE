@@ -24,8 +24,11 @@ describe('User 모델에 대한 테스트', () => {
 
   describe('로그인 시 token을 발급해주는 테스트', () => {
     it('정상적으로 로그인에 성공했을 경우, token을 발급해준다.', () => {
-      // TODO: 여기 진행해야함
-      expect(user.createToken()).toBe('1');
+      const mockDate = jest.spyOn(Date, 'now').mockImplementation(() => 123456789);
+      expect(user.createToken()).toBe(
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnaXRodWJJZCI6ImdpdGh1YklkIiwiaWF0IjoxMjM0NTZ9.5VDtPDe48YwIsgyV8kEcEVhQD5ZXTtct-GsRM6NmBzM'
+      );
+      mockDate.mockClear();
     });
   });
 });

@@ -21,6 +21,16 @@ export class UserService {
     return user.createToken();
   }
 
+  // get user's info
+  async getUserInformation({ githubId }: { githubId: string }) {
+    const user = await this.userRepository().findById(githubId);
+
+    if (!user) {
+      throw new Error(`A such ${githubId} is not existed.`);
+    }
+    return user;
+  }
+
   // update user intro
   async updateIntro({ githubId, userInfo }: { githubId: string; userInfo: string }) {
     const user = await this.userRepository().findById(githubId);

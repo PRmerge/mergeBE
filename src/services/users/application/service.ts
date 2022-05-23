@@ -17,6 +17,19 @@ export class UserService {
       return newUser.createToken();
     }
 
+    // FIXME: 유저 업데이트도 필요할려나...
     return user.createToken();
+  }
+
+  // update user intro
+  async updateIntro({ githubId, userInfo }: { githubId: string; userInfo: string }) {
+    const user = await this.userRepository().findById(githubId);
+
+    if (!user) {
+      // FIXME: error message 세세하게 설명
+      throw new Error('Not found User');
+    }
+    user.update({ userInfo });
+    return this.userRepository().save(user);
   }
 }

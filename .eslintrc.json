@@ -18,6 +18,8 @@
   },
   "ignorePatterns": ["node_modules/"],
   "rules": {
+    "@typescript-eslint/no-explicit-any": "off",
+    "class-methods-use-this": "off",
     "max-classes-per-file": "off",
     "import/prefer-default-export": "off",
     "prettier/prettier": "error",

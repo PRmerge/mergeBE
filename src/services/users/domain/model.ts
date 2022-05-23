@@ -41,6 +41,17 @@ export class User {
     return sign({ githubId: this.githubId }, process.env.JTW_SECRET_KEY!);
   }
 
+  // update user
+  update(args: { [key: string]: any }) {
+    const stripped = Object.keys(args).reduce((acc: { [key: string]: any }, prop) => {
+      if (args[prop] !== undefined) {
+        acc[prop] = args[prop];
+      }
+      return acc;
+    }, {});
+    return Object.assign(this, stripped);
+  }
+
   private constructor(args: LoginTypes) {
     if (args) {
       this.token = args.token;

@@ -7,6 +7,7 @@ import * as compression from 'compression';
 import { connectMysql } from './config/mysql';
 import { globalRouter } from './routes';
 import 'dotenv/config';
+import { errorHandler, routerError } from './middlewares/error-handler';
 
 class App {
   app: express.Application = express();
@@ -23,6 +24,8 @@ class App {
 
   private routerHandler() {
     this.app.use('/', globalRouter);
+    this.app.use(routerError);
+    this.app.use(errorHandler);
   }
 
   constructor() {

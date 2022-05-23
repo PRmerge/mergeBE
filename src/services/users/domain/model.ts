@@ -29,7 +29,7 @@ export class User {
   stack?: Stack[];
 
   // create New User Object
-  static create(args: LoginTypes) {
+  static create(args: LoginTypes | undefined) {
     if (args) {
       return new User(args);
     }

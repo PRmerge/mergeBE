@@ -9,7 +9,7 @@ router.post('/login/pre', async (req, res, next) => {
 
   try {
     const isUser = await userService.preLogin({ githubId });
-    res.json({ data: isUser });
+    res.json({ data: !!isUser });
   } catch (err) {
     next(err);
   }

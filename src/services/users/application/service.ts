@@ -23,6 +23,11 @@ export class UserService {
     return user.createToken();
   }
 
+  // get list
+  list() {
+    return this.userRepository().list();
+  }
+
   // get user's info
   async getUserInformation({ githubId }: { githubId: string }) {
     const user = await this.userRepository().findById(githubId);
